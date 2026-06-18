@@ -332,34 +332,6 @@ kubectl apply -f deployment/k8s/manifests.yaml
 kubectl get pods -n rl-platform
 ```
 
-### Monitoring
-
-`deployment/monitoring/prometheus.yml` scrapes the trainer and inference targets and Prometheus itself. Grafana is included in the compose stack for dashboards.
-
-## Notebooks
-
-The `notebooks/` directory contains four notebooks that trace the project's development: the original implementation, the delayed-reward optimization work, distributed training experiments, and benchmark analysis. They're useful for understanding how the packaged `src/` modules came together.
-
-## Screenshots
-
-_No images are included in the repository._ For a quick visual of agent behavior, `GraphNavEnv.render_policy()` prints the learned policy as an ASCII grid with directional arrows and coin markers, which is handy to drop into a notebook or terminal session.
-
-```
-[ Add a policy-grid render or a training-curve plot here ]
-```
-
-## Notes and Known Gaps
-
-A few things in the repository are referenced but not yet present, which is worth knowing before relying on them:
-
-- **No CI/CD pipeline is included** — there is no `.github/` directory or workflow file.
-- **No `configs/` directory**, although the Docker and Kubernetes manifests pass `--config configs/default.yaml`. The `--config` flag in `scripts/train.py` is parsed but not read, so configuration currently comes from the other CLI flags. Add a config loader (or a `configs/default.yaml`) before using the container default command as-is.
-- **No `scripts/serve.py`**, though the compose and k8s manifests launch inference with `python -m scripts.serve`. The serving logic exists in `src/serving/model_registry.py` (`InferenceService`); a thin entry-point script needs to be added to match the manifests.
-- **No `tests/` directory** yet.
-- **No `LICENSE` file** is present (see below).
-- `requirements.txt` includes `gymnasium`, `ray`, `fastapi`, `uvicorn`, and `hydra-core`, which the current code does not import.
-- `VectorizedEnv` runs environments sequentially despite its docstring mentioning multiprocessing.
-- The inference service listens on port 8080 and does not expose a `/metrics` endpoint, while the Prometheus config scrapes inference on port 9090; align these if you want inference metrics scraped.
 
 ## Future Improvements
 
@@ -371,6 +343,3 @@ These follow directly from the gaps above and the existing structure:
 - Expose inference metrics on the port Prometheus expects.
 - Trim unused dependencies, or actually adopt them (e.g. make the environment Gymnasium-compatible, or move the experience queue to Redis).
 
-## License
-
-No license file is currently included in the repository, so usage and distribution terms are unspecified by default. If this is intended to be open source, add a `LICENSE` file (for example MIT) to make the terms explicit.
